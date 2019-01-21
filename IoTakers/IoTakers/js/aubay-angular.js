@@ -1,0 +1,1 @@
+﻿var aubayApp = angular.module('aubayApp', []);

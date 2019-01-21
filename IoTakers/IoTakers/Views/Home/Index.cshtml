@@ -1,0 +1,501 @@
+﻿@model IoTakers.Models.RequestsViewModel
+
+<style>
+    h3 {
+        font-size: 20px;
+    }
+
+    th, td {
+        text-align: center;
+    }
+
+    .table-tab {
+        font-size: 18px;
+        right: 0.2em;
+        border-left: 2px solid #333;
+        border-right: 2px solid #333;
+        border-top: 1.4px solid #333 !important;
+        border-top-left-radius: 0.4em;
+        border-top-right-radius: 0.4em;
+        margin-top: 4.05em;
+    }
+
+    .tab-active, .tab:hover {
+        background: #333;
+        color: white
+    }
+
+    .tab:hover {
+        cursor: pointer;
+    }
+
+    .detail_Patient:hover {
+        cursor: pointer;
+    }
+
+    .pointer:hover {
+        cursor: pointer
+    }
+
+    .sendRenovationRequest:hover {
+        color: green
+    }
+
+    .sendRenovationRequest {
+        font-size: 17px;
+        padding-top: 2px;
+        cursor: pointer
+    }
+
+    #numerOfBoxesInput {
+        padding-left: 5px;
+        width: 3em;
+    }
+    #acceptOrder:hover {
+        opacity: 0.8;
+    }
+    .alert-red {
+        color: red;
+        opacity: 0.8
+    }
+    #renovationTable_wrapper {
+        background: #212529;
+        color: white;
+        border-radius: 8px;
+    }
+    #renovationTable_length > label, #renovationTable_filter > label, #renovationTable_previous, #renovationTable_next {
+        color: white !important
+    }
+    #renovationTable_length > label > select, #renovationTable_filter > label > select{
+        color: #212529 !important
+    }
+    #renovationTable_length, #renovationTable_filter {
+        padding: 0.5em 0em 0em 1em;
+    }
+    tbody {
+        color: #212529;
+    }
+    #renovationTable_info {
+        padding-left: 1em;
+        color: white !important;
+    }
+
+</style>
+<section class="content" ng-controller="Index">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-xs-3">
+            <!-- small box -->
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>{{renovationRequests.length}}</h3>
+                    <p>Renovation Requests</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
+                </div>
+            </div>
+        </div><!-- ./col -->
+        <div class="col-lg-3 col-md-3 col-xs-3">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>{{historicRequests.length}}</h3>
+                    <p>Processed Requests</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+            </div>
+        </div><!-- ./col -->
+        <div class="col-lg-3 col-md-3 col-xs-3">
+            <!-- small box -->
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <h3>{{pillsRegistered.length}}</h3>
+                    <p>Pills</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+            </div>
+        </div><!-- ./col -->
+        <div class="col-lg-3 col-md-3 col-xs-3">
+            <!-- small box -->
+            <div class="small-box bg-gray">
+                <div class="inner">
+                    <h3>5</h3>
+                    <p>Patients</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+            </div>
+        </div><!-- ./col -->
+        <div class="col-lg-3 col-md-3 col-xs-3" style="text-align:center">
+            <button ng-click="actualizeViewModel();">Actualize</button>
+        </div>
+    </div><!-- /.row -->
+    <!-- Main row -->
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-xs-12">
+            <section class="content">
+                <div class="row" style="display:flex">
+                    <div class="col-lg-12 col-md-12" style="margin: 0px auto 1em auto; padding-left:0px; text-align:center">
+                        <h3>Renovation Requests</h3>
+                    </div>
+                </div>
+                <div class="row" style="display:flex">
+                    <div class="col-lg-12 col-md-12" style="margin:0 auto">
+                        <table id="renovationTable" class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th># Pedido</th>
+                                    <th>Medicamento</th>
+                                    <th>Efetuar Pedido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="renovationEntry in renovationRequests">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{ renovationEntry.pill.Name }}</td>
+                                    <td>
+                                        <i ng-click="sendIndexOfRequest($index);" class="fas fa-check-square sendRenovationRequest"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <div class="row" style="display:flex">
+                <div class="col-lg-12 col-md-12" style="margin:0 auto">
+                    <table id="historialTable" class="table table-condensed">
+                        <thead style="background-color:#212529;color:white; text-align:center">
+                            <tr>
+                                <th>Número do Pedido</th>
+                                <th>Medicamento</th>
+                                <th>Quantidade (caixas)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="historicEntry in historicRequests">
+                                <td>{{$index + 1}}</td>
+                                <td>{{historicEntry.medicamento}}</td>
+                                <td>{{historicEntry.quantidade}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6" style="padding: 15px;">
+            <div class="row" style="display:flex">
+                <div class="col-lg-12 col-md-12" style="margin: 0px auto 1em auto; padding-left:0px; text-align:center">
+                    <h3>Patients</h3>
+                </div>
+            </div>
+            <div class="row" style="display:flex">
+                <div class="col-lg-12 col-md-12" style="margin:0 auto">
+                    <table id="patientsTable" class="table">
+                        <thead style="background-color:#212529;color:white; text-align:center">
+                            <tr>
+                                <th scope="col" style="text-align: center;">#</th>
+                                <th scope="col" style="text-align: center;">Name</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody style="text-align:center">
+                            <tr>
+                                <th scope="row" style="text-align: center;">1</th>
+                                <td>Joaquim Madeiras</td>
+                                <td><button class="detail_Patient"><i class="fas fa-search"></i></button></td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="text-align: center;">2</th>
+                                <td>Fernando Augusto</td>
+                                <td><button class="detail_Patient"><i class="fas fa-search"></i></button></td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="text-align: center;">3</th>
+                                <td>Ana Barbosa</td>
+                                <td><button class="detail_Patient"><i class="fas fa-search"></i></button></td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="text-align: center;">4</th>
+                                <td>Tiago Coutinho</td>
+                                <td><button class="detail_Patient"><i class="fas fa-search"></i></button></td>
+                            </tr>
+                            <tr>
+                                <th scope="row" style="text-align: center;">5</th>
+                                <td>Carla Figueiras</td>
+                                <td><button class="detail_Patient"><i class="fas fa-search"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Confirm New Request Modal -->
+    <div class="modal fade" id="confirmNewRequest" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div ng-if="makeRequest" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Tem a certeza que adicionou um novo pedido de renovação de stock?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="top: 0.5em;position: absolute;right: 0.7em;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span id="numerOfBoxesSpan">Quantas caixas de comprou?</span>
+                    <input id="numerOfBoxesInput" type="text" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="float:left">Não</button>
+                    <button id="confirmRequest" ng-click="DoARequest($index);" type="button" class="btn btn-primary">Sim</button>
+                </div>
+            </div>
+            <div ng-if="confirmRequest" class="modal-content">
+                <div class="modal-body" style="text-align:center">
+                    <img src="~/img/orderconfirmed.jpg" style="width:300px;">
+                    <h4 style="margin:0 3em">A new payment order will enter the system . Make sure you have everything paid. </h4>
+                </div>
+                <div class="modal-footer" style="text-align:center">
+
+                    <button id="acceptOrder" data-dismiss="modal" type="button" class="btn btn-secondary" style="margin:0 auto !important">Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div class="modal fade" id="PatientDetails" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="width: 55em;">
+            <div class="modal-content">
+                <div class="modal-body" style="text-align:center; padding-bottom:25px;">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 ">
+                            <div class="col-lg-12 col-md-12 ">
+                                <i data-dismiss="modal" class="pointer fas fa-window-close" style="position: absolute;font-size: 2em;right: 0;"></i>
+                                <div class="col-lg-3 col-md-3 " style="left:-3em;padding-top:1px">
+                                    <i class="fas fa-user-md" style="font-size:7em"></i>
+                                </div>
+                                <div id="medView" class="tab col-lg-3 col-md-3 table-tab">Medication</div>
+                                <div id="docView" class="tab col-lg-3 col-md-3 table-tab">Doctors</div>
+                                <div id="genView" class="tab-active tab col-lg-3 col-md-3 table-tab">General</div>
+                                <!-- General View -->
+                                <div class="col-lg-12 col-md-12" style="padding:0px !important; border:2px solid #333;border-radius:6px">
+                                    <div ng-if="ViewGeneralActive" class="col-lg-6 col-md-6 " style="text-align: left;padding: 15px 10px;">
+                                        <div class="col-lg-12 col-md-12">
+                                            <h4 class="text-bold" style="float:left">Personal Information</h4>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="col-lg-12 col-md-12">
+                                                <h4 style="float:left;margin-top:15px">Name</h4>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <h5 style="float:left;margin-top:5px">Tiago Almeida</h5>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <h4 style="float:left;margin-top:15px">Birth Date</h4>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <h5 style="float:left;margin-top:5px">04-12-1991</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="col-lg-12 col-md-12">
+                                                <h4 style="float:left;margin-top:15px">Address</h4>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <h5 style="float:left;margin-top:5px">Rua Conde Rodrigo, nº12 RC</h5>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <h4 style="float:left;margin-top:0px">Telephone</h4>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <h5 style="float:left;margin-top:5px">962734683</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div ng-if="ViewGeneralActive" class="col-lg-6 col-md-6 " style="text-align: left;padding: 30px 10px;">
+                                        <div class="col-lg-12 col-md-12">
+                                            <table class="table">
+                                                <thead style="background-color:#212529;color:white; text-align:center">
+                                                    <tr>
+                                                        <th scope="col" style="text-align: center;">Doctor</th>
+                                                        <th scope="col" style="text-align: center;">Medication</th>
+                                                        <th scope="col"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="text-align:center">
+                                                    <tr>
+                                                        <td scope="row" style="text-align: center;">D. Ana Barreto</td>
+                                                        <td>Brufen</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row" style="text-align: center;">D. João Dias</td>
+                                                        <td>Ben-u-Ron</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div ng-if="ViewGeneralActive" class="col-lg-12 col-md-12 text-left" style="padding:0px 30px;">
+                                        <h4 class="text-bold">In case of an emergency</h4>
+                                    </div>
+                                    <div ng-if="ViewGeneralActive" class="col-lg-12 col-md-12" style="padding:0px 30px;">
+                                        <table class="table">
+                                            <thead style="background-color:#212529;color:white; text-align:center">
+                                                <tr>
+                                                    <th scope="col" style="text-align: center;">Name</th>
+                                                    <th scope="col" style="text-align: center;">Address</th>
+                                                    <th scope="col" style="text-align: center;">Telephone</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody style="text-align:center">
+                                                <tr>
+                                                    <td scope="row" style="text-align: center;">Julia Paiva</td>
+                                                    <td>Rua Jaime Pascoal nº8</td>
+                                                    <td>934872373</td>
+                                                </tr>
+                                                <tr>
+                                                    <td scope="row" style="text-align: center;">André Couto</td>
+                                                    <td>Rua Otávio Pereira nº21 2E</td>
+                                                    <td>932837495</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!--Doctor View-->
+                                    <div ng-if="ViewDoctorsActive" class="col-lg-12 col-md-12" style="padding:30px;">
+                                        <table class="table">
+                                            <thead style="background-color:#212529;color:white; text-align:center">
+                                                <tr>
+                                                    <th scope="col" style="text-align: center;">#</th>
+                                                    <th scope="col" style="text-align: center;">Name</th>
+                                                    <th scope="col" style="text-align: center;">Telephone</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody style="text-align:center">
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td scope="row" style="text-align: center;">D. Ana Barreto</td>
+                                                    <td>934872373</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td scope="row" style="text-align: center;">D. João Dias</td>
+                                                    <td>932837495</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!--Medication View-->
+                                    <div ng-if="ViewMedicationActive" class="col-lg-12 col-md-12 " style="text-align: left;padding: 30px 10px;">
+                                        <div class="col-lg-12 col-md-12">
+                                            <table class="table">
+                                                <thead style="background-color:#212529;color:white; text-align:center">
+                                                    <tr>
+                                                        <th scope="col" style="text-align: center;">#</th>
+                                                        <th scope="col" style="text-align: center;">Medication</th>
+                                                        <th scope="col"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="text-align:center">
+                                                    <tr>
+                                                        <td scope="row" style="text-align: center;">1</td>
+                                                        <td scope="row" style="text-align: center;">Brufen</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row" style="text-align: center;">2</td>
+                                                        <td scope="row" style="text-align: center;">Ben-u-Ron</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
+<script src="~/js/PatientsController.js"></script>
+<script src="~/js/IndexRootController.js"></script>
+<script>
+    $(document).ready(function () {
+        var angular_model = @Html.Raw(Json.Encode(Model));
+        var ctrlIndex = getScope('Index');
+        ctrlIndex.init(angular_model);
+        ctrlIndex.$apply();
+
+        $('#historialTable').DataTable({
+            responsive: true,
+            "lengthMenu": [[5, 10, 15, 30], [5, 10, 15, 30]]
+        });
+        $('#renovationTable').DataTable({
+            responsive: true,
+            "lengthMenu": [[5, 10, 15, 30], [5, 10, 15, 30]]
+        });
+
+        $('#patientsTable').DataTable({
+            responsive: true,
+            "lengthMenu": [[5, 10, 15, 30], [5, 10, 15, 30]]
+        });
+
+
+        $('#confirmRequest').on('click', function (e) {
+            if ($('#numerOfBoxesInput').val() == "") {
+                toastr.error("Please write a number.");
+                e.preventDefault();
+            }
+            else {
+                //$('#confirmNewRequest').modal('toggle');
+                k();
+            }
+        });
+
+        $("#numerOfBoxesInput").on("keypress keyup blur", function (event) {
+            $(this).val($(this).val().replace(/[^\d].+/, ""));
+            if ((event.which < 48 || event.which > 57)) {
+                event.preventDefault();
+            }
+        });
+
+        $("#medView").on('click', function () {
+            var ctrlIndex = getScope('Index');
+            ctrlIndex.setViewMedicationActive();
+            ctrlIndex.$apply();
+            $('.tab').removeClass('tab-active');
+            $(this).addClass('tab-active');
+        });
+        $("#docView").on('click', function () {
+            var ctrlIndex = getScope('Index');
+            ctrlIndex.setViewDoctorsActive();
+            ctrlIndex.$apply();
+            $('.tab').removeClass('tab-active');
+            $(this).addClass('tab-active');
+        });
+        $("#genView").on('click', function () {
+            var ctrlIndex = getScope('Index');
+            ctrlIndex.setViewGeneralActive();
+            ctrlIndex.$apply();
+            $('.tab').removeClass('tab-active');
+            $(this).addClass('tab-active');
+        });
+
+        $('.detail_Patient').on('click', function () {
+            $('#PatientDetails').modal();
+        });
+    });
+</script>
